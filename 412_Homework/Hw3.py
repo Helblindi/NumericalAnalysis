@@ -5,6 +5,9 @@ Created on Mon Jan 29 11:05:33 2018
 @author: Madison
 """
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 print("Computer Problem 6.5.1f")
 """
 Write a python implementation of RK23 (Example 6.19), and apply to
@@ -16,10 +19,6 @@ of steps.
 # Solve example 6.1 (p. 283) using RK23 (example 6.19) with a relative
 # tolerance of 10^(-8) on [0, 1]. Stop exactly at t = 1.
 # Report maximum step size used and the number of steps.
-
-import numpy as np
-import matplotlib.pyplot as plt
-
 
 # Example 6.1
 def f(t, y):
@@ -69,7 +68,7 @@ t = np.array([a])
 w = np.array([y0])
 count = 0
 
-while (t[count] < b):
+while t[count] < b:
     count = count + 1
 
     nh, nw, h0 = RK23stepVf(t[count - 1], w[count - 1], h0, f)
@@ -77,7 +76,7 @@ while (t[count] < b):
     w = np.append(w, nw)
     t = np.append(t, t[count - 1] + nh)
 
-if (t[count] > b):
+if t[count] > b:
     h = b - t[count - 1]
     nh, nw, n0 = RK23stepVf(t[count - 1], w[count - 1], h0, f);
     w = np.append(w, nw)
@@ -108,5 +107,3 @@ y' = 6y - 6y^2
 y(0) = 1/2
 t in [0,20]
 """
-
-
