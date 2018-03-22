@@ -9,7 +9,7 @@ def mymesh(xvals, yvals, w, xlabel='', ylabel='', zlabel=''):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot_wireframe(x, y, w, rstride=1)
-    ax.set_xlabel(xlabel);
-    ax.set_ylabel(ylabel);
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
     plt.show()

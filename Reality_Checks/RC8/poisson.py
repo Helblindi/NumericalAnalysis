@@ -19,12 +19,12 @@ import numpy as np
 from mymesh import mymesh
 
 
-def poisson(xl, xr, yb, yt, M, N, Power, length, width, K, H):
+def poisson(xl, xr, yb, yt, M, N, Power, length, width, K, H, p_int=[0,2]):
     P = Power  # watts
     L = length  # fin length in cm
     D = width  # find width in mm
-    K = K  # w/cm Celsius thermal conductivity
-    H = H  # convective heat transfer coefficient w/cm^2 Celsius
+    # K w/cm Celsius thermal conductivity
+    # H convective heat transfer coefficient w/cm^2 Celsius
     F = 2 * H / float(K * D)
     m = M + 1
     n = N + 1
@@ -33,9 +33,7 @@ def poisson(xl, xr, yb, yt, M, N, Power, length, width, K, H):
     h2 = h ** 2
     k = float((yt - yb) / N)
     k2 = k ** 2
-    # set up mesh points
-    x = np.linspace(xl, xr, m)
-    y = np.linspace(yb, yt, n)
+
     # build A and b
     A = np.zeros((mn, mn))
     b = np.zeros(mn)
@@ -47,7 +45,6 @@ def poisson(xl, xr, yb, yt, M, N, Power, length, width, K, H):
             A[i + j * m, i + j * m] = -2. / h2 - 2. / k2 - F
             A[i + j * m, i + (j - 1) * m] = 1. / k2
             A[i + j * m, i + (j + 1) * m] = 1. / k2
-            b[i + j * m] = 0
 
     for i in range(m):
         # bottom
@@ -55,94 +52,28 @@ def poisson(xl, xr, yb, yt, M, N, Power, length, width, K, H):
         A[i + j * m, i + j * m] = -3 / (2 * k) + (H / K)
         A[i + j * m, i + (j + 1) * m] = 4 / (2 * k)
         A[i + j * m, i + (j + 2) * m] = -1 / (2 * k)
-        b[i + j * m] = 0
         # top
         j = n - 1
         A[i + j * m, i + j * m] = -3 / (2 * k) + (H / K)
         A[i + j * m, i + (j - 1) * m] = 4 / (2 * k)
         A[i + j * m, i + (j - 2) * m] = -1 / (2 * k)
-        b[i + j * m] = 0
+
     # left and right boundaries
     for j in range(1, n - 1):
         # left
         i = 0
-        A[i + j * m, i + 1 + j * m] = -3 / (2 * h)
-        A[i + j * m, i + 2 + j * m] = 4 / (2 * h)
-        A[i + j * m, i + 3 + j * m] = -1 / (2 * h)
-        b[i + j * m] = -P/(L*D*K)
+        A[i + j * m, i + j * m] = -3 / (2 * h) + H / K
+        A[i + j * m, i + 1 + j * m] = 4 / (2 * h)
+        A[i + j * m, i + 2 + j * m] = -1 / (2 * h)
+
+        if j * h >= p_int[0] and j * h <= p_int[1]:
+            A[i + j * m, i + j * m] = -3 / (2 * h)
+            b[i + j * m] = -P / (L * D * K)
         # right
         i = m - 1
         A[i + j * m, i + j * m] = -3 / (2 * h) + (H / K)
         A[i + j * m, i - 1 + j * m] = 4 / (2 * h)
         A[i + j * m, i - 2 + j * m] = -1 / (2 * h)
-        b[i + j * m] = 0
-
-    # matprint(A)
-    # solve for v
-    v = np.linalg.solve(A, b)
-    # translate form v to w
-    w = np.reshape(v, (m, n), order='F')
-    return w
-
-
-def shifting_poisson(xl, xr, yb, yt, M, N, Power, length, width, K, H, shift):
-    # x is shift of power source, where x = 0 represents standard used in other problems
-    P = Power  # watts
-    L = length  # fin length in cm
-    D = width  # find width in mm
-    K = K  # w/cm Celsius thermal conductivity
-    H = H  # convective heat transfer coefficient w/cm^2 Celsius
-    F = 2 * H / float(K * D)
-    m = M + 1
-    n = N + 1
-    mn = m * n
-    h = float((xr - xl) / M)
-    h2 = h ** 2
-    k = float((yt - yb) / N)
-    k2 = k ** 2
-    # set up mesh points
-    x = np.linspace(xl, xr, m)
-    y = np.linspace(yb, yt, n)
-    # build A and b
-    A = np.zeros((mn, mn))
-    b = np.zeros(mn)
-    # interior points
-    for i in range(1, m - 1):
-        for j in range(1, n - 1):
-            A[i + j * m, i - 1 + j * m] = 1. / h2
-            A[i + j * m, i + 1 + j * m] = 1. / h2
-            A[i + j * m, i + j * m] = -2. / h2 - 2. / k2 - F
-            A[i + j * m, i + (j - 1) * m] = 1. / k2
-            A[i + j * m, i + (j + 1) * m] = 1. / k2
-            b[i + j * m] = 0
-
-    for i in range(m):
-        # bottom
-        j = 0
-        A[i + j * m, i + j * m] = -3 / (2 * k) + (H / K)
-        A[i + j * m, i + (j + 1) * m] = 4 / (2 * k)
-        A[i + j * m, i + (j + 2) * m] = -1 / (2 * k)
-        b[i + j * m] = 0
-        # top
-        j = n - 1
-        A[i + j * m, i + j * m] = -3 / (2 * k) + (H / K)
-        A[i + j * m, i + (j - 1) * m] = 4 / (2 * k)
-        A[i + j * m, i + (j - 2) * m] = -1 / (2 * k)
-        b[i + j * m] = 0
-    # left and right boundaries
-    for j in range(1, n - 1):
-        # left
-        i = 0
-        A[i + j * m, i + 1 + shift + j * m] = -3 / (2 * h)
-        A[i + j * m, i + 2 + shift + j * m] = 4 / (2 * h)
-        A[i + j * m, i + 3 + shift + j * m] = -1 / (2 * h)
-        b[i + j * m] = -P/(L*D*K)
-        # right
-        i = m - 1
-        A[i + j * m, i + j * m] = -3 / (2 * h) + (H / K)
-        A[i + j * m, i - 1 + j * m] = 4 / (2 * h)
-        A[i + j * m, i - 2 + j * m] = -1 / (2 * h)
-        b[i + j * m] = 0
 
     # matprint(A)
     # solve for v
@@ -159,37 +90,6 @@ def matprint(mat, fmt="g"):
             print(("{:"+str(col_maxes[i])+fmt+"}").format(y), end="  ")
         print("")
     return
-
-
-# # define data
-# # this is Example 8.8
-# # f is the external forcing function
-# def f(x, y):
-#     return 0
-#
-#
-# # g1 is the boundary condition on the bottom, y = 1
-# def g1(x):
-#     return np.log(x ** 2 + 1)
-#
-#
-# # g2 is the boundary condition on the top, y = 2
-# def g2(x):
-#     return np.log(x ** 2 + 4)
-#
-#
-# # g3 is the boundary condition on the left, x = 0
-# def g3(y):
-#     return 2 * np.log(y)
-#
-#
-# # g4 is the boundary condition on the right, x = 1
-# def g4(y):
-#     return np.log(y ** 2 + 1)
-#
-#
-# def u_exact(x, y):
-#     return np.log(x ** 2 + y ** 2)
 
 
 # Everything should be in a function
@@ -215,4 +115,4 @@ def sample():
     # ex = u_exact(mx, my)
     # error = np.abs(ex - w.T)
     # mymesh(xp, yp, error, 'x', 'y', 'w')
-    return 0
+    return

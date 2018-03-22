@@ -3,7 +3,7 @@ from suggested_activities import *
 
 def main():
     # Display available options to the user
-    choice = input("Indicate which Suggested Activity you would like to run (1-6, 0 to run all):")
+    choice = input("Indicate which Suggested Activity you would like to run (1-7, 0 to run all):")
 
     # Execute a function dependent on user input
     if choice == "1":
@@ -38,7 +38,7 @@ def main():
     else:
         print("Invalid input.")
 
-    return 0
+    return
 
 
 # While not required, it is considered good practice to have

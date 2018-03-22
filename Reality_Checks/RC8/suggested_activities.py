@@ -17,6 +17,7 @@ def sa1():
     xr = 2
     yb = 0
     yt = 2
+    u_b = 20
 
     power = 5  # watts
     length = 2  # cm
@@ -27,7 +28,7 @@ def sa1():
     n = 10
 
     # np.set_print_options(precision=8,line_width=140)
-    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
     print('w = ', w)
     xp = np.linspace(xl, xr, m + 1)
     yp = np.linspace(yb, yt, n + 1)
@@ -43,9 +44,10 @@ def sa2():
     values of M and N (use 10, 40, 100). How much does the solution change?
     """
     xl = 0
-    xr = 2
+    xr = 4
     yb = 0
-    yt = 2
+    yt = 4
+    u_b = 20
 
     power = 5  # watts
     length = 4  # cm
@@ -55,7 +57,7 @@ def sa2():
     m = 10
     n = 10
 
-    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
     xp = np.linspace(xl, xr, m + 1)
     yp = np.linspace(yb, yt, n + 1)
     mymesh(xp, yp, w.T, 'x', 'y', 'w')
@@ -82,14 +84,15 @@ def sa2():
 
 def sa3():
     """
-    Find the maximum power that can be dissipated by a 4×4cm fin while keep-ing the
+    Find the maximum power that can be dissipated by a 4×4cm fin while keeping the
     maximum temperature less than 80◦C. Assume the power input is the same as in
     steps 1 and 2.
     """
     xl = 0
-    xr = 2
+    xr = 4
     yb = 0
-    yt = 2
+    yt = 4
+    u_b = 20
 
     power = 5.4638  # watts
     length = 4  # cm
@@ -98,11 +101,11 @@ def sa3():
     H = 0.005
     m = 100
     n = 100
-    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
 
     while max(w[0]) <= 80.0:
         power += .0001
-        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
         # if (max(w[0]) > 80):
         #     power -= 0.05
         #     w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
@@ -123,9 +126,10 @@ def sa4():
     below 80◦C.
     """
     xl = 0
-    xr = 2
+    xr = 4
     yb = 0
-    yt = 2
+    yt = 4
+    u_b = 20
 
     power = 5.67  # watts
     length = 4  # cm
@@ -134,11 +138,11 @@ def sa4():
     H = 0.005
     m = 100
     n = 100
-    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
 
     while max(w[0]) <= 80.0:
         power += .001
-        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
         # if (max(w[0]) > 80):
         #     power -= 0.05
         #     w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
@@ -158,9 +162,10 @@ def sa5():
     for 3.67 ≤ K ≤ 5 W/cm◦C
     """
     xl = 0
-    xr = 2
+    xr = 4
     yb = 0
-    yt = 2
+    yt = 4
+    u_b = 20
 
     power = 5.67  # watts
     length = 4  # cm
@@ -170,22 +175,21 @@ def sa5():
     H = 0.005
     m = 100
     n = 100
-    # xx = [1, 2, 3, 4, 5, 6]
-    # yy = [3.4, 4.8, 5.7, 9.7, 3.1, 1.4]
-    # plt.plot(xx, yy, 'r-', linewidth=1.0, label='test')
-    # plt.show()
-    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+
+    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
     y = np.array([max(w[0])])
     while K < 5.0:
         K += .05
         x = np.append(x, K)
-        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
         y = np.append(y, max(w[0]))
         print('K: ', K)
 
     print('len x: ', len(x))
     print('len y: ', len(y))
     plt.plot(x, y, 'r-', linewidth=1.0, label='test')
+    plt.set_xlabel('Power')
+    plt.set_ylabel('Max Temperature')
     plt.show()
     plt.savefig("test_fig.png")
     # add axis labels
@@ -199,9 +203,10 @@ def sa6():
     is maintained at 20◦C
     """
     xl = 0
-    xr = 2
+    xr = 4
     yb = 0
-    yt = 2
+    yt = 4
+    u_b = 20
 
     power = 74.22  # watts
     length = 4  # cm
@@ -210,11 +215,11 @@ def sa6():
     H = 0.1
     m = 100
     n = 100
-    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
 
     while max(w[0]) <= 80.0:
         power += 0.001
-        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+        w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
         print('power: ', power)
         print('temp: ', max(w[0]))
     # np.set_print_options(precision=8,line_width=140)
@@ -235,9 +240,10 @@ def sa7():
     in step 2?
     """
     xl = 0
-    xr = 2
+    xr = 4
     yb = 0
-    yt = 2
+    yt = 4
+    u_b = 20
 
     power = 5  # watts
     length = 4  # cm
@@ -246,14 +252,19 @@ def sa7():
     H = 0.005
     m = 10
     n = 10
-    x = 1  # shift increment
 
-    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H)
+    w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H) + u_b
     max_w = max(w.max(axis=1))
     print('max w: ', max_w)
 
     # finds the max of a 2 dimensional array
-    shifted_w = shifting_poisson(xl, xr, yb, yt, m, n, power, length, width, K, H, x)
+    p_int = [1.0, 3.0]
+    shifted_w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H, p_int) + u_b
+    max_shifted_w = max(shifted_w.max(axis=1))
+    print('max shifted w: ', max_shifted_w)
+
+    p_int = [1.25, 3.25]
+    shifted_w = poisson(xl, xr, yb, yt, m, n, power, length, width, K, H, p_int) + u_b
     max_shifted_w = max(shifted_w.max(axis=1))
     print('max shifted w: ', max_shifted_w)
 
