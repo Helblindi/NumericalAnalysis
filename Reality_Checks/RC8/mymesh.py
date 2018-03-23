@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 # 3-D plot of 2D array w
-def mymesh(xvals, yvals, w, xlabel='', ylabel='', zlabel=''):
+def mymesh(xvals, yvals, w, xlabel='', ylabel='', zlabel='', title=''):
     x, y = np.meshgrid(xvals, yvals)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -12,4 +12,5 @@ def mymesh(xvals, yvals, w, xlabel='', ylabel='', zlabel=''):
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
+    plt.title(title)
     plt.show()

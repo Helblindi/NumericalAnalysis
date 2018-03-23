@@ -68,7 +68,7 @@ def poisson(xl, xr, yb, yt, M, N, Power, length, width, K, H, p_int=[0,2]):
 
         if j * h >= p_int[0] and j * h <= p_int[1]:
             A[i + j * m, i + j * m] = -3 / (2 * h)
-            b[i + j * m] = -P / (L * D * K)
+            b[i + j * m] = -P / ((p_int[1]-p_int[0]) * D * K)
         # right
         i = m - 1
         A[i + j * m, i + j * m] = -3 / (2 * h) + (H / K)
